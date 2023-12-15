@@ -1,0 +1,49 @@
+<%- include("_header") -%>
+
+<h1>Import E-Vehicles</h1>
+
+<p>Total number of electric vehicles in the database: <%= model.length %></p>
+
+<form id="importForm" action="/import" method="post" enctype="multipart/form-data">
+  <div class="form-group">
+    <p>Select a file with electric vehicles for database import:</p>
+    <input type="file" class="form-control-file" id="importFile" name="importFile" required>
+  </div>
+  <div class="d-flex justify-content-center">
+    <button type="submit" class="btn btn-primary">Import E-Vehicles</button>
+  </div>
+</form>
+
+<div id="importSummary" style="display: none;">
+  <!-- Display import summary -->
+  <h2>Import Summary</h2>
+  <p id="waitResults"><strong>Wait for results...</strong></p>
+  <!-- Import summary data will be displayed here -->
+</div>
+
+<script>
+  document.getElementById('importForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+
+    // Display "Wait for Results"
+    document.getElementById('importSummary').style.display = 'block';
+
+    fetch('/import', {
+      method: 'POST',
+      body: formData,
+    })
+    .then(response => response.text())
+    .then(html => {
+      // Replace "Wait for Results" with the import summary HTML
+      document.getElementById('waitResults').style.display = 'none';
+      document.getElementById('importSummary').innerHTML = html;
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  });
+</script>
+
+<%- include("_footer") -%>
